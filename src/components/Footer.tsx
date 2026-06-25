@@ -1,161 +1,95 @@
-import {
-  ArrowUp,
-  Github,
-  Linkedin,
-  Mail,
-  Phone,
-  MapPin,
-  Facebook,
-  Instagram,
-  Twitter,
-  MessageCircle
-} from "lucide-react";
-
+import { ArrowUp, Github, Linkedin, Mail, Phone, MapPin } from "lucide-react";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import Logo from "@/components/Logo";
+import { personalInfo, socialLinks } from "@/data/portfolio";
+import { fadeUp } from "@/animations/animations";
+import { scrollToTop } from "@/utils/smoothScroll";
 
-const socialLinks = [
-  { icon: Github, href: "https://github.com/" },
-  { icon: Linkedin, href: "https://linkedin.com/" },
-  { icon: Facebook, href: "https://facebook.com/" },
-  { icon: Instagram, href: "https://instagram.com/" },
-  { icon: Twitter, href: "https://twitter.com/" },
-  { icon: MessageCircle, href: "https://wa.me/919520776129" },
+const socialIcons = [
+  { icon: Github, href: socialLinks.github, label: "GitHub" },
+  { icon: Linkedin, href: socialLinks.linkedin, label: "LinkedIn" },
+  { icon: WhatsAppIcon, href: socialLinks.whatsapp, label: "WhatsApp" },
 ];
 
-const Footer = () => {
-
-  const scrollToTop = () =>
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-  return (
-
-    <footer className="border-t border-border py-12 bg-muted/20">
-
-      <div className="container mx-auto px-4">
-
-        <motion.div
-          initial={{ opacity:0, y:40 }}
-          whileInView={{ opacity:1, y:0 }}
-          viewport={{ once:true }}
-          transition={{ duration:0.6 }}
-          className="grid md:grid-cols-3 gap-10 items-center"
-        >
-
-          {/* Left */}
-          <div className="space-y-3 text-center md:text-left">
-
-            <h3 className="text-lg font-semibold">
-              Mohammad Ayan
-            </h3>
-
-            <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-muted-foreground">
-              <MapPin size={16} className="text-primary"/>
-              New Delhi, India
-            </div>
-
-            <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-muted-foreground">
-              <Mail size={16} className="text-primary"/>
-              <a href="mailto:mohdayan84381@gmail.com">
-                mohdayan84381@gmail.com
-              </a>
-            </div>
-
-            <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-muted-foreground">
-              <Phone size={16} className="text-primary"/>
-              +91 9520776129
-            </div>
-
+const Footer = () => (
+  <footer className="border-t border-border bg-muted/20 py-8">
+    <div className="container mx-auto px-4 sm:px-6">
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        className="grid grid-cols-1 items-center gap-10 md:grid-cols-3"
+      >
+        <div className="space-y-4 text-center md:text-left">
+          <Logo />
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground md:justify-start">
+            <MapPin size={16} className="text-primary" />
+            {personalInfo.location}
           </div>
-
-
-          {/* Center */}
-          <div className="text-center">
-
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-              Front-End Developer passionate about building responsive,
-              high-performance and modern web applications using
-              HTML, CSS, JavaScript and Tailwind CSS.
-            </p>
-
-            <p className="text-xs text-muted-foreground mt-3">
-              Built with React • Tailwind CSS • Framer Motion
-            </p>
-
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground md:justify-start">
+            <Mail size={16} className="text-primary" />
+            <a href={`mailto:${personalInfo.email}`} className="hover:text-primary">
+              {personalInfo.email}
+            </a>
           </div>
-
-
-          {/* Right */}
-          <div className="flex flex-col items-center md:items-end gap-5">
-
-            {/* Social icons */}
-            <div className="flex flex-wrap gap-3">
-
-              {socialLinks.map((social, i)=>{
-
-                const Icon = social.icon;
-
-                return(
-
-                  <motion.a
-                    whileHover={{ scale:1.15 }}
-                    key={i}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition"
-                  >
-
-                    <Icon size={16} className="text-primary"/>
-
-                  </motion.a>
-
-                );
-
-              })}
-
-            </div>
-
-            {/* Back to top */}
-            <motion.div whileHover={{ scale:1.15 }}>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={scrollToTop}
-                className="hover:bg-primary/10"
-              >
-                <ArrowUp size={16}/>
-              </Button>
-
-            </motion.div>
-
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground md:justify-start">
+            <Phone size={16} className="text-primary" />
+            <a href={`tel:${personalInfo.phone}`} className="hover:text-primary">
+              {personalInfo.phone}
+            </a>
           </div>
+        </div>
 
-        </motion.div>
-
-
-        {/* Bottom */}
-        <motion.div
-          initial={{ opacity:0 }}
-          whileInView={{ opacity:1 }}
-          viewport={{ once:true }}
-          transition={{ delay:0.3 }}
-          className="border-t border-border mt-10 pt-6 text-center"
-        >
-
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Mohammad Ayan. All rights reserved.
+        <div className="text-center">
+          <p className="mx-auto max-w-sm text-sm leading-relaxed text-muted-foreground">
+            {personalInfo.title} building responsive, scalable web apps with React.js,
+            TypeScript, and modern full-stack tools.
           </p>
+          <p className="mt-3 text-xs text-muted-foreground">
+            React • TypeScript • Python • Tailwind
+          </p>
+        </div>
 
-        </motion.div>
+        <div className="flex flex-col items-center gap-5 md:items-end">
+          <div className="flex flex-wrap justify-center gap-3 md:justify-end">
+            {socialIcons.map((social) => (
+              <motion.a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.1, y: -2 }}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/15"
+                aria-label={social.label}
+              >
+                <social.icon size={16} className="text-primary" />
+              </motion.a>
+            ))}
+          </div>
+          <motion.div whileHover={{ scale: 1.1 }}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={scrollToTop}
+              className="hover:bg-primary/10"
+              aria-label="Back to top"
+            >
+              <ArrowUp size={16} />
+            </Button>
+          </motion.div>
+        </div>
+      </motion.div>
 
+      <div className="mt-10 border-t border-border pt-6 text-center">
+        <p className="text-sm text-muted-foreground">
+          © {new Date().getFullYear()} {personalInfo.name}. All rights reserved.
+        </p>
       </div>
-
-    </footer>
-
-  );
-
-};
+    </div>
+  </footer>
+);
 
 export default Footer;
