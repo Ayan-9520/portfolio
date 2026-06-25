@@ -3,12 +3,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Mail, MapPin, Phone, Github, Linkedin } from "lucide-react";
+import { Loader2, Send, Mail, MapPin, Phone, Github, Linkedin } from "lucide-react";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 import SectionHeading from "@/components/SectionHeading";
 import { personalInfo, socialLinks } from "@/data/portfolio";
 import { slideLeft, slideRight } from "@/animations/animations";
 import { useToast } from "@/hooks/use-toast";
+import { submitContactForm } from "@/lib/contactForm";
 
 const socialIcons = [
   { icon: Github, href: socialLinks.github, label: "GitHub" },
@@ -19,14 +20,31 @@ const socialIcons = [
 const ContactSection = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast({
-      title: "Message sent!",
-      description: "Thank you for reaching out. I'll get back to you soon.",
-    });
-    setFormData({ name: "", email: "", message: "" });
+    setIsSubmitting(true);
+
+    try {
+      await submitContactForm(formData);
+      toast({
+        title: "Message sent!",
+        description: "Thank you for reaching out. I'll get back to you soon.",
+      });
+      setFormData({ name: "", email: "", message: "" });
+    } catch (error) {
+      toast({
+        title: "Could not send message",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again or email me directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactItems = [
@@ -107,30 +125,43 @@ const ContactSection = () => {
           >
             <Input
               placeholder="Your Name"
+              name="name"
               required
+              disabled={isSubmitting}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <Input
               type="email"
               placeholder="Your Email"
+              name="email"
               required
+              disabled={isSubmitting}
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
             <Textarea
               rows={5}
               placeholder="Your Message"
+              name="message"
               required
+              disabled={isSubmitting}
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
             />
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button className="w-full" variant="hero" type="submit">
-                Send Message
-                <Send className="ml-2" size={16} />
-              </Button>
-            </motion.div>
+            <Button className="w-full" variant="hero" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  Send Message
+                  <Send className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
           </motion.form>
         </div>
       </div>
