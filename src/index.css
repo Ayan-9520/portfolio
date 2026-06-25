@@ -59,9 +59,18 @@
     @apply bg-background text-foreground font-body antialiased overflow-x-hidden;
   }
   html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 4.5rem;
+    scroll-behavior: auto;
+    scroll-padding-top: 5rem;
     overflow-x: hidden;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
   }
 }
 

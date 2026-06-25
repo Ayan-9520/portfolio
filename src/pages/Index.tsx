@@ -10,17 +10,16 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ScrollProgress from "@/components/ScrollProgress";
-import PageLoader from "@/components/PageLoader";
-import initSmoothScroll from "@/utils/smoothScroll";
+import initSmoothScroll, { destroySmoothScroll } from "@/utils/smoothScroll";
 
 const Index = () => {
   useEffect(() => {
     initSmoothScroll();
+    return () => destroySmoothScroll();
   }, []);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
-      <PageLoader />
       <ScrollProgress />
       <Navbar />
       <main>

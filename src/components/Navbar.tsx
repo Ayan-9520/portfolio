@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Sun, Moon } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Logo from "@/components/Logo";
 import { navLinks } from "@/data/portfolio";
 import { scrollToSection } from "@/utils/scrollTo";
 import { useTheme } from "@/hooks/ThemeProvider";
+import { getLenis, setScrollLocked } from "@/utils/smoothScroll";
 import { cn } from "@/lib/utils";
 
 const Navbar = () => {
@@ -14,29 +15,44 @@ const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 24);
+    let cleanup: (() => void) | undefined;
 
-      const sections = [{ href: "#home" }, ...navLinks];
-      for (const link of sections) {
-        const section = document.querySelector(link.href);
-        if (!section) continue;
-        const rect = section.getBoundingClientRect();
-        if (rect.top <= 100 && rect.bottom >= 100) {
-          setActive(link.href);
-          break;
-        }
+    const attach = () => {
+      const lenis = getLenis();
+      if (!lenis) {
+        requestAnimationFrame(attach);
+        return;
       }
+
+      const update = () => {
+        setScrolled(lenis.scroll > 24);
+
+        const sections = [{ href: "#home" }, ...navLinks];
+        for (const link of sections) {
+          const section = document.querySelector(link.href);
+          if (!section) continue;
+          const rect = section.getBoundingClientRect();
+          if (rect.top <= 110 && rect.bottom >= 110) {
+            setActive(link.href);
+            break;
+          }
+        }
+      };
+
+      lenis.on("scroll", update);
+      update();
+      cleanup = () => lenis.off("scroll", update);
     };
 
-    handleScroll();
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    attach();
+    return () => cleanup?.();
   }, []);
 
   useEffect(() => {
+    setScrollLocked(isOpen);
     document.body.style.overflow = isOpen ? "hidden" : "";
     return () => {
+      setScrollLocked(false);
       document.body.style.overflow = "";
     };
   }, [isOpen]);
@@ -63,10 +79,10 @@ const Navbar = () => {
             type="button"
             onClick={() => handleNavClick("#home")}
             className="shrink-0 rounded-xl px-1 transition-transform hover:scale-[1.02]"
-            aria-label="Go to home"
+            aria-label="Ayan — Home"
           >
-            <Logo className="sm:hidden" showText={false} size="sm" />
             <Logo className="hidden sm:inline-flex" />
+            <Logo className="sm:hidden" showText={false} iconSize={32} />
           </button>
 
           <div className="hidden items-center gap-2 md:flex">
@@ -93,7 +109,6 @@ const Navbar = () => {
               onClick={toggleTheme}
               className="flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-muted/40 text-foreground transition-all hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
               aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              title={isDark ? "Light mode" : "Dark mode"}
             >
               {isDark ? <Sun size={17} /> : <Moon size={17} />}
             </button>
